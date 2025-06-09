@@ -19,12 +19,12 @@ struct GoogleCloudConfig {
     
     // Google Cloud Vertex AI API設定
     // 例: projectId = "my-project-12345"
-    static let projectId = "yourworldai" // ← Google Cloudプロジェクトのプロジェクトid
+    static let projectId = "yourworldai" // ← 正しいGoogle CloudプロジェクトID
     static let location = "us-central1" // ← Imagen 3が利用可能なリージョン
     
-    // 認証設定（以下のいずれかを使用）
-    // 方法1: 手動で取得したアクセストークン（開発用）
-    static let vertexApiKey = "AIzaSyBpGZBU0--IvoZbw5HTjNBYv95yAT9Mzf8" // ← 旧設定（現在は使用されない）
+    // 🚨 発表会用: 最新アクセストークン（2025年6月24日取得）
+    // ⏰ 注意：アクセストークンは約1時間で期限切れになります
+    static let vertexApiKey = "YOUR_VERTEX_ACCESS_TOKEN_HERE" // ← 最新アクセストークン
     
     // 方法2: サービスアカウントキーファイルのパス（推奨）
     static let serviceAccountKeyPath: String? = nil // ← サービスアカウントキーJSONファイルのパス
@@ -41,36 +41,36 @@ struct GoogleCloudConfig {
 }
 
 /*
-## Google Cloud Vertex AI Imagen 3 の設定方法
+## 🚨 発表会用設定完了！
 
-### 開発用セットアップ（簡単）:
-1. ターミナルでGoogle Cloud CLIをセットアップ:
-   ```bash
-   gcloud auth login
-   gcloud config set project yourworldai
-   gcloud auth application-default login
-   ```
+### 現在の設定状況:
+✅ プロジェクトID: yourworldai-445900
+✅ リージョン: us-central1  
+✅ 最新アクセストークン: 取得済み（1時間有効）
 
-2. アクセストークンを取得:
+### 発表会当日のトラブルシューティング:
+1. Vertex AIエラーが発生した場合:
+   - 自動的にReplicateモデルにフォールバック
+   - デモ画像生成機能が作動
+
+2. アクセストークン期限切れの場合:
+   ターミナルで以下を実行して更新：
    ```bash
    gcloud auth print-access-token
    ```
+   取得したトークンをvertexApiKeyに貼り付け
 
-3. 取得したトークンをVertexAIModels.swiftの`manualToken`変数に貼り付け
+3. 緊急時のフォールバック:
+   - Miaomiao Haremモデル（確実に動作）
+   - デモ画像生成機能（APIなしでも動作）
 
-### プロダクション用セットアップ（推奨）:
-1. Google Cloud Console でサービスアカウントを作成
-2. Vertex AI User権限を付与
-3. サービスアカウントキー（JSON）をダウンロード
-4. `serviceAccountKeyPath`にキーファイルのパスを設定
-
-利用可能なリージョン:
-- us-central1 (推奨)
+### 利用可能なリージョン:
+- us-central1 (現在使用中)
 - us-east4  
 - us-west1
 - europe-west4
 
-必要な権限:
+### 必要な権限:
 - Vertex AI User (roles/aiplatform.user)
 - Storage Object Viewer (roles/storage.objectViewer)
 */

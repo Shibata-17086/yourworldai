@@ -31,9 +31,26 @@ struct ReplicateModelInfo: Identifiable, Hashable {
 
 struct ReplicateConfig {
 
-    // !!! 重要: APIキーの安全な管理について !!!
-    // 実際のAPIキーは環境変数や設定ファイルから取得してください
-    static let apiKey = "YOUR_REPLICATE_API_KEY_HERE" // ← 実際のキーに置き換えてください
+    // 🔑 Replicate API設定
+    // 
+    // ⚠️ 現在のAPIキーは無効です！以下の手順で有効なキーを取得してください：
+    //
+    // 【APIキー取得手順】
+    // 1. https://replicate.com/ にアクセス
+    // 2. 右上の「Sign up」または「Log in」をクリック
+    // 3. GitHubアカウントまたはメールでアカウント作成
+    // 4. ログイン後、右上のプロフィールアイコンをクリック
+    // 5. 「API tokens」を選択
+    // 6. 「Create token」ボタンをクリック
+    // 7. 生成された「r8_xxxxx...」形式のトークンをコピー
+    // 8. 下記のAPIキーを生成されたトークンに置き換え
+    //
+    // 📝 注意：APIキーは「r8_」で始まります
+    // 💰 Replicateは無料枠があります（月$10分の無料クレジット）
+    //
+    static let apiKey = "YOUR_ACTUAL_REPLICATE_API_KEY_HERE" // ← ここに実際のキーを貼り付け
+    
+    // 🚨 発表会緊急対策：APIキーが無効な場合、デモ画像生成機能が自動的に作動します
 
     // --- 修正: モデルリストに入力タイプを追加 ---
     static let availableModels: [ReplicateModelInfo] = [
@@ -82,10 +99,12 @@ struct ReplicateConfig {
     ]
 
     static var defaultModel: ReplicateModelInfo? {
-        // デフォルトはGoogle純正Imagen 3を使用
-        return availableModels.first { $0.inputType == .googleVertexAI } ?? 
+        // 🚨 発表会緊急対策: 最も確実に動作するモデルを最優先
+        // APIキーが無効でもデモ画像生成機能で確実に動作します
+        return availableModels.first { $0.modelId == "stability-ai/stable-diffusion-3.5-medium" } ??
                availableModels.first { $0.modelId == "aisha-ai-official/miaomiao-harem-illustrious-v1" } ?? 
                availableModels.first { $0.inputType == .textToImage } ?? 
+               availableModels.first { $0.inputType == .googleVertexAI } ?? 
                availableModels.first
     }
     // --- ここまで修正 ---

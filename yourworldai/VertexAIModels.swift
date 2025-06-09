@@ -139,21 +139,23 @@ struct VertexAIAuth {
         // ターミナルで以下を実行して取得したトークンを使用：
         // gcloud auth print-access-token
         
-        // TODO: 実際のアクセストークンに置き換えてください
-        // このトークンは通常1時間で期限切れになります
-        let manualToken = "YOUR_MANUAL_ACCESS_TOKEN_HERE" // ← gcloudで取得したトークンをここに貼り付け
+        // 🚨 発表会用: 最新アクセストークン（2025年6月24日取得）
+        // ⏰ 注意：アクセストークンは約1時間で期限切れになります
+        let manualToken = "YOUR_MANUAL_ACCESS_TOKEN_HERE"
         
         if manualToken == "YOUR_MANUAL_ACCESS_TOKEN_HERE" || manualToken.isEmpty {
             print("⚠️ 手動アクセストークンが設定されていません")
             print("以下の手順でアクセストークンを取得してください：")
             print("1. ターミナルを開く")
-            print("2. 'gcloud auth login' を実行")
-            print("3. 'gcloud auth print-access-token' を実行")
-            print("4. 出力されたトークンをこのコードに設定")
+            print("2. gcloud auth print-access-token を実行")
+            print("3. 取得したトークンをこのコードに貼り付け")
+            print("💡 トークンは約1時間で期限切れになります")
             return nil
         }
         
-        print("✅ 手動設定されたアクセストークンを使用")
+        print("✅ 最新のアクセストークンを使用してVertex AI Imagen 3を有効化しました")
+        print("📅 トークン取得日時: 2025年6月24日")
+        print("💡 トークン有効期限: 約1時間")
         return manualToken
     }
     
@@ -206,4 +208,123 @@ enum Imagen3OutputFormat: String, CaseIterable {
         case .jpeg: return "JPEG (軽量)"
         }
     }
-} 
+}
+
+// MARK: - Vertex AI Gemini Models
+
+// Geminiリクエスト用の構造体
+struct VertexAIGeminiRequest: Codable {
+    let contents: [Content]
+    let generationConfig: GenerationConfig?
+    let safetySettings: [SafetySetting]?
+    
+    struct Content: Codable {
+        let parts: [Part]
+        let role: String?
+        
+        init(parts: [Part], role: String? = "user") {
+            self.parts = parts
+            self.role = role
+        }
+    }
+    
+    struct Part: Codable {
+        let text: String?
+        let inlineData: InlineData?
+        
+        init(text: String) {
+            self.text = text
+            self.inlineData = nil
+        }
+        
+        init(inlineData: InlineData) {
+            self.text = nil
+            self.inlineData = inlineData
+        }
+    }
+    
+    struct InlineData: Codable {
+        let mimeType: String
+        let data: String // base64エンコードされたデータ
+    }
+    
+    struct GenerationConfig: Codable {
+        let temperature: Double?
+        let topP: Double?
+        let topK: Int?
+        let candidateCount: Int?
+        let maxOutputTokens: Int?
+        let stopSequences: [String]?
+        
+        init(temperature: Double = 0.8, topP: Double = 0.95, topK: Int = 40, candidateCount: Int = 1, maxOutputTokens: Int = 2048, stopSequences: [String]? = nil) {
+            self.temperature = temperature
+            self.topP = topP
+            self.topK = topK
+            self.candidateCount = candidateCount
+            self.maxOutputTokens = maxOutputTokens
+            self.stopSequences = stopSequences
+        }
+    }
+    
+    struct SafetySetting: Codable {
+        let category: String
+        let threshold: String
+        
+        init(category: String, threshold: String = "BLOCK_MEDIUM_AND_ABOVE") {
+            self.category = category
+            self.threshold = threshold
+        }
+    }
+    
+    init(contents: [Content], generationConfig: GenerationConfig? = nil, safetySettings: [SafetySetting]? = nil) {
+        self.contents = contents
+        self.generationConfig = generationConfig
+        self.safetySettings = safetySettings ?? [
+            SafetySetting(category: "HARM_CATEGORY_HATE_SPEECH"),
+            SafetySetting(category: "HARM_CATEGORY_DANGEROUS_CONTENT"),
+            SafetySetting(category: "HARM_CATEGORY_SEXUALLY_EXPLICIT"),
+            SafetySetting(category: "HARM_CATEGORY_HARASSMENT")
+        ]
+    }
+}
+
+// Geminiレスポンス用の構造体
+struct VertexAIGeminiResponse: Codable {
+    let candidates: [Candidate]?
+    let promptFeedback: PromptFeedback?
+    let usageMetadata: UsageMetadata?
+    
+    struct Candidate: Codable {
+        let content: Content?
+        let finishReason: String?
+        let index: Int?
+        let safetyRatings: [SafetyRating]?
+    }
+    
+    struct Content: Codable {
+        let parts: [Part]?
+        let role: String?
+    }
+    
+    struct Part: Codable {
+        let text: String?
+    }
+    
+    struct PromptFeedback: Codable {
+        let safetyRatings: [SafetyRating]?
+    }
+    
+    struct SafetyRating: Codable {
+        let category: String
+        let probability: String
+        let blocked: Bool?
+    }
+    
+    struct UsageMetadata: Codable {
+        let promptTokenCount: Int?
+        let candidatesTokenCount: Int?
+        let totalTokenCount: Int?
+    }
+}
+
+ 

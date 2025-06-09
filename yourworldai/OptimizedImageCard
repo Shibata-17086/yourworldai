@@ -1,0 +1,41 @@
+                    // シンプルな下部エリア
+                    VStack(spacing: 6) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("評価してください")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundColor(.primary)
+                                
+                                if let description = item.description, description.starts(with: "AI生成画像") {
+                                    Text("🤖 AI生成画像")
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundColor(.blue)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 2)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color.blue.opacity(0.2))
+                                        )
+                                } else {
+                                    Text("左右にスワイプ")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            // シンプルなアイコン
+                            HStack(spacing: 8) {
+                                Image(systemName: "hand.point.left.fill")
+                                    .foregroundColor(.red.opacity(0.6))
+                                    .font(.system(size: 14))
+                                
+                                Image(systemName: "hand.point.right.fill")
+                                    .foregroundColor(.green.opacity(0.6))
+                                    .font(.system(size: 14))
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                    } 
